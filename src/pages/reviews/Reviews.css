@@ -1,0 +1,7 @@
+.section-myReviews {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: auto;
+  row-gap: 9rem;
+  justify-items: center;
+}

@@ -1,0 +1,25 @@
+.review-card__heading {
+  width: 40rem;
+  text-align: center;
+  height: 7.5rem;
+  background-color: rgba(255, 254, 254, 0.217);
+  padding: 1.25rem 0rem;
+  border-bottom: 1px solid #f7f7f7;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.15);
+}
+
+.review-card__heading h3 {
+  font-size: 2rem;
+  background-image: linear-gradient(to right, #7dd56f, #28b487);
+  background-clip: text;
+  color: transparent;
+}
+
+.reviews-card__card {
+  height: 90%;
+  width: 40rem;
+}
+
+.review-card__text {
+  margin-top: 3rem;
+}

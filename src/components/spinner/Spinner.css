@@ -1,0 +1,9 @@
+.spinner-wrapper {
+  min-height: 80vh;
+  margin: auto;
+  max-width: 20rem;
+  padding: 7rem 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
