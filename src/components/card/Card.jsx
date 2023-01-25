@@ -1,40 +1,50 @@
-import "./Card.css";
-import { useState } from "react";
 import { AiOutlineCalendar, AiOutlineUser } from "react-icons/ai";
 import { BsFlag } from "react-icons/bs";
 import { FiMapPin } from "react-icons/fi";
+import { useMutation, useQueryClient } from "react-query";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useGlobalContext } from "../../context/UserContext";
 import { deleteBooking } from "../../util/api";
 import { nextTourDate } from "../../util/functions";
+import useLocalStorage from "../../util/hooks/useLocalStorage";
+import "./Card.css";
 
 const Card = ({ tour, myBookingsPage, booking }) => {
+  const [user] = useLocalStorage("user");
   const { rerender, setRerender } = useGlobalContext();
-  const [loading, setLoading] = useState(false);
   const { date } = nextTourDate(tour);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  const handleCancelBooking = async () => {
-    setLoading(true);
-    try {
-      await deleteBooking(booking._id);
+  const cancelBookingMutation = useMutation({
+    mutationFn: (bookingId) => deleteBooking(bookingId),
+    onSuccess: () => {
       toast.success("Your bookings was canceled successfully");
+      queryClient.invalidateQueries({ queryKey: ["bookings", user._id] });
       setRerender(!rerender);
-    } catch (err) {
+    },
+    onError: (err) => {
       console.log(
         "Deleting booking error: ",
         err.response ? err.response.data : err
       );
       toast.error(err.response ? err.response.data.message : err.message);
-    }
-    setLoading(false);
+    },
+  });
+
+  const handleCancelBooking = () => {
+    cancelBookingMutation.mutate(booking._id);
   };
 
   return (
     <article
       className="card"
-      onClick={() => navigate(`/tour/${tour.slug}-${tour.id}#header`)}
+      onClick={(e) => {
+        if (e.target.id !== "cancelBtn") {
+          navigate(`/tour/${tour.slug}-${tour.id}`);
+        }
+      }}
       title="See more details"
     >
       <div className="card__header">
@@ -93,8 +103,9 @@ const Card = ({ tour, myBookingsPage, booking }) => {
           <button
             className="btn btn--small btn--red"
             onClick={handleCancelBooking}
+            id="cancelBtn"
           >
-            {loading ? "Cancelling..." : "Cancel"}
+            {cancelBookingMutation.isLoading ? "Cancelling..." : "Cancel"}
           </button>
         ) : (
           <NavLink

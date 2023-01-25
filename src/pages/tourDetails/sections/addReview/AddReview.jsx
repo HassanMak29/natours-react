@@ -1,37 +1,43 @@
-import "./AddReview.css";
 import { useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import { useGlobalContext } from "../../../../context/UserContext";
 import { addReview } from "../../../../util/api";
+import "./AddReview.css";
 
 const AddReview = ({ tour }) => {
   const { rerender, setRerender } = useGlobalContext();
   const [rating, setRating] = useState("choose_a_rating");
   const [reviewText, setReviewText] = useState("");
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
+
+  const addReviewMutation = useMutation({
+    mutationFn: ({ tourId, reviewText, rating }) =>
+      addReview(tourId, reviewText, rating),
+    onSuccess: () => {
+      setRerender(!rerender);
+      toast.success("Your review was added successfully!");
+      queryClient.invalidateQueries({ queryKey: ["tours", tour._id] });
+    },
+    onError: (err) => {
+      console.log(
+        "Adding reciew error: ",
+        err.response ? err.response.data : err
+      );
+      toast.error(err.response ? err.response.data.message : err.message);
+    },
+    onSettled: () => {
+      setRating("choose_a_rating");
+      setReviewText("");
+    },
+  });
 
   const handleSubmitreview = async (e) => {
     e.preventDefault();
     if (rating === "choose_a_rating") {
       return toast.warn("Please add a rating");
     }
-    setLoading(true);
-    try {
-      await addReview(tour._id, reviewText, rating);
-      setRating("choose_a_rating");
-      setReviewText("");
-      setRerender(!rerender);
-      toast.success("Your review was added successfully!");
-    } catch (err) {
-      setRating("choose_a_rating");
-      setReviewText("");
-      console.log(
-        "Adding reciew error: ",
-        err.response ? err.response.data : err
-      );
-      toast.error(err.response ? err.response.data.message : err.message);
-    }
-    setLoading(false);
+    addReviewMutation.mutate({ tourId: tour._id, reviewText, rating });
   };
 
   return (
@@ -72,7 +78,7 @@ const AddReview = ({ tour }) => {
             type="submit"
             className="btn btn--green btn--small review-form__button"
           >
-            {loading ? "Adding your review..." : "Submit"}
+            {addReviewMutation.isLoading ? "Adding your review..." : "Submit"}
           </button>
         </form>
       </div>

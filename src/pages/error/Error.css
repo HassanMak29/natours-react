@@ -4,4 +4,24 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+  height: calc(100vh - 29rem);
+  /* background-color: #d25050; */
+}
+
+#error-page h1 {
+  font-size: 8rem;
+  font-family: inherit;
+  color: #d25050;
+}
+
+.error-standard-messsage {
+  font-family: inherit;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.error {
+  color: #d25050;
+  font-size: 2rem;
+  font-weight: bold;
 }

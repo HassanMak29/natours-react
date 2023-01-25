@@ -16,17 +16,21 @@ export const register = async (name, email, password, passwordConfirm) => {
 };
 
 export const login = async (email, password) => {
-  const res = await axios.post(`${process.env.REACT_APP_API_URL}/users/login`, {
-    email,
-    password,
-  });
-
-  return res.data;
+  const { data } = await axios.post(
+    `${process.env.REACT_APP_API_URL}/users/login`,
+    {
+      email,
+      password,
+    }
+  );
+  return data;
 };
 
 export const logout = async () => {
-  const res = await axios.get(`${process.env.REACT_APP_API_URL}/users/logout`);
-  return res.data;
+  const { data } = await axios.get(
+    `${process.env.REACT_APP_API_URL}/users/logout`
+  );
+  return data;
 };
 
 export const refresh = async () => {
@@ -57,15 +61,29 @@ export const updatePassword = async (
 };
 
 export const deleteMyAccount = async () => {
-  const res = await axios.delete(
-    `${process.env.REACT_APP_API_URL}/users/deleteMe`
+  await axios.delete(`${process.env.REACT_APP_API_URL}/users/deleteMe`);
+};
+
+export const getAllUsers = async () => {
+  const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/users`);
+  return data;
+};
+
+export const updateUser = async (userId, name, email, role) => {
+  const { data } = await axios.patch(
+    `${process.env.REACT_APP_API_URL}/users/${userId}`,
+    { name, email, role }
   );
-  return res.data;
+  return data.data;
+};
+
+export const deleteUser = async (userId) => {
+  await axios.delete(`${process.env.REACT_APP_API_URL}/users/${userId}`);
 };
 
 ///////// TOURS /////////////
 export const getAllTours = async () => {
-  const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/tours/`);
+  const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/tours`);
   return data.data;
 };
 
@@ -91,17 +109,26 @@ export const getMyBookings = async (id) => {
   return data.data;
 };
 
+export const getAllBookings = async () => {
+  const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/booking`);
+  return data.data;
+};
+
 export const deleteBooking = async (id) => {
   return await axios.delete(`${process.env.REACT_APP_API_URL}/booking/${id}`);
 };
 
 ///////////// REVIEWS ///////////////
-
 export const getReviews = async (userId) => {
   const { data } = await axios.get(
     `${process.env.REACT_APP_API_URL}/reviews/${userId}`
   );
-  return data;
+  return data.data;
+};
+
+export const getAllReviews = async () => {
+  const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/reviews`);
+  return data.data;
 };
 
 export const addReview = async (tourId, review, rating) => {

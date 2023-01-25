@@ -4,6 +4,7 @@
   background-color: #444;
   display: flex;
   align-items: center;
+  position: relative;
 }
 
 .header nav {
@@ -18,20 +19,26 @@
 
 .header__home,
 .header__cta {
-  flex: 0 1 20%;
+  flex: 0 1 60%;
+}
+
+.header__home > .header__link:not(:first-child) {
+  margin-left: 2rem;
 }
 
 .header__link,
 .header__link--username {
   color: #fff;
   font-size: 1.6rem;
+  font-weight: 500;
   text-transform: uppercase;
   transition: 0.3s all;
+  display: inline-block;
 }
 
 .header__link:hover,
 .header__link:active {
-  transform: translateY(-2px);
+  transform: translateY(-2px) !important;
   text-shadow: 0 0.7rem 1rem #000;
 }
 
@@ -47,7 +54,7 @@
 
 .header__link--logout,
 .header__link--login {
-  margin-right: 3rem;
+  margin-right: 2rem;
 }
 
 .header__link--user {
@@ -57,7 +64,7 @@
 
 .header__link--user span {
   font-size: 1.6rem;
-  color: white;
+  color: inherit;
 }
 
 .header__link--user-img {
@@ -71,4 +78,74 @@
   border: 1px solid #fff;
   border-radius: 10rem;
   padding: 1rem 2rem;
+}
+
+.header__actions {
+  color: #fff;
+  background-color: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 1.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: 0.3s all;
+  margin-left: 2rem;
+  padding: 1rem 0;
+  cursor: pointer;
+}
+
+.header__actions:hover {
+  transform: translateY(-2px);
+  text-shadow: 0 0.7rem 1rem #000;
+}
+
+.header__actions--icon {
+  margin-bottom: -0.2rem;
+}
+
+.header__actions--options {
+  width: 20rem;
+  background-color: #f7f7f7;
+  position: absolute;
+  top: 7rem;
+  left: 28.4rem;
+  z-index: 100;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.header__actions--options ul {
+  display: flex;
+  flex-direction: column;
+}
+
+.header__actions--options li {
+  width: 100%;
+  padding: 1rem 2rem;
+}
+
+.header__actions--options li:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+}
+
+.header__actions--options a {
+  color: #444;
+  display: inline-block;
+}
+
+.header__actions--overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 50;
+}
+
+.header__actions--link:hover {
+  text-shadow: 0 0.7rem 1rem rgba(0, 0, 0, 0.416) !important;
+}
+
+.hidden {
+  display: none;
 }

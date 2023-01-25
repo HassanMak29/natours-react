@@ -8,6 +8,10 @@
   box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.15);
 }
 
+.review-card__heading--manage-tours {
+  height: 6rem;
+}
+
 .review-card__heading h3 {
   font-size: 2rem;
   background-image: linear-gradient(to right, #7dd56f, #28b487);
@@ -16,7 +20,7 @@
 }
 
 .reviews-card__card {
-  height: 90%;
+  height: 28rem;
   width: 40rem;
 }
 

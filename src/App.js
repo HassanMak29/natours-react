@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
-
 import { ToastContainer } from "react-toastify";
+import { QueryClient, QueryClientProvider } from "react-query";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { ContextProvider } from "./context/UserContext";
 import Bookings from "./pages/bookings/Bookings";
@@ -13,6 +13,11 @@ import Register, { action as registerAction } from "./pages/register/Register";
 import RootLayout from "./pages/rootLayout/RootLayout";
 import TourDetails from "./pages/tourDetails/TourDetails";
 import Reviews from "./pages/reviews/Reviews";
+import ManageReviews from "./pages/manageReviews/ManageReviews";
+import ManageUsers from "./pages/manageUsers/ManageUsers";
+import ManageBookings from "./pages/manageBookings/ManageBookings";
+
+const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
   {
@@ -23,7 +28,7 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
-        loader: allToursLoader,
+        loader: allToursLoader(queryClient),
       },
       {
         path: "login",
@@ -63,8 +68,32 @@ const router = createBrowserRouter([
       {
         path: "/user/reviews",
         element: (
-          <ProtectedRoute backTo="/">
+          <ProtectedRoute backTo="/" forUser>
             <Reviews />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/reviews",
+        element: (
+          <ProtectedRoute backTo="/" forAdmin>
+            <ManageReviews />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/users",
+        element: (
+          <ProtectedRoute backTo="/" forAdmin>
+            <ManageUsers />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/bookings",
+        element: (
+          <ProtectedRoute backTo="/" forAdmin>
+            <ManageBookings />
           </ProtectedRoute>
         ),
       },
@@ -74,10 +103,12 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <ContextProvider>
-      <RouterProvider router={router} />
-      <ToastContainer />
-    </ContextProvider>
+    <QueryClientProvider client={queryClient}>
+      <ContextProvider>
+        <RouterProvider router={router} />
+        <ToastContainer />
+      </ContextProvider>
+    </QueryClientProvider>
   );
 }
 

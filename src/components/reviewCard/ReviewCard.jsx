@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import BeatLoader from "react-spinners/BeatLoader";
 import { useGlobalContext } from "../../context/UserContext";
@@ -6,62 +7,80 @@ import { deleteReview, updateReview } from "../../util/api";
 import "./ReviewCard.css";
 import { AiFillCheckCircle, AiOutlineStar } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
+import useLocalStorage from "../../util/hooks/useLocalStorage";
 
-const ReviewCard = ({ review, tour, setIsEditing }) => {
+const ReviewCard = ({ review, tour, setIsEditing, manageReviewsPage }) => {
+  const [user] = useLocalStorage("user");
   const { rerender, setRerender } = useGlobalContext();
-  const [isDeletingReview, setIsDeletingReview] = useState(false);
-  const [isSendingUpdatedReview, setIsSendingUpdatedReview] = useState(false);
   const [editing, setEditing] = useState(false);
   const [newReview, setNewReview] = useState(review.review);
   const [newRating, setNewRating] = useState(review.rating);
+  const queryClient = useQueryClient();
 
-  const handleRemoveReviewOrExitEdit = async () => {
-    if (editing) return setEditing(false);
-    setIsEditing(true);
-    setIsDeletingReview(true);
-    try {
-      await deleteReview(review._id);
+  const deleteReviewMutation = useMutation({
+    mutationFn: (reviewId) => deleteReview(reviewId),
+    onSuccess: () => {
       toast.success("Your review was deleted successfully!");
       setRerender(!rerender);
-    } catch (err) {
+      queryClient.invalidateQueries({ queryKey: ["allReviews"] });
+      queryClient.invalidateQueries({ queryKey: ["reviews", user._id] });
+    },
+    onError: (err) => {
       console.log(
         "Deleting reciew error: ",
         err.response ? err.response.data : err
       );
       toast.error(err.response ? err.response.data.message : err.message);
-    }
-    setIsDeletingReview(false);
+    },
+  });
+
+  const editReviewMutation = useMutation({
+    mutationFn: ({ reviewId, newRating, newReview }) =>
+      updateReview(reviewId, newRating, newReview),
+    onSuccess: () => {
+      toast.success("Your review was edited successfully!");
+      setRerender(!rerender);
+      setEditing(false);
+      queryClient.invalidateQueries({ queryKey: ["allReviews"] });
+      queryClient.invalidateQueries({ queryKey: ["reviews", user._id] });
+    },
+    onError: (err) => {
+      console.log(
+        "Editing reciew error: ",
+        err.response ? err.response.data : err
+      );
+      toast.error(err.response ? err.response.data.message : err.message);
+    },
+  });
+
+  const handleRemoveReviewOrExitEdit = async () => {
+    setIsEditing(true);
+    if (editing) return setEditing(false);
+    deleteReviewMutation.mutate(review._id);
   };
 
   const handleEditReview = async () => {
     setIsEditing(true);
-    setIsSendingUpdatedReview(true);
-    try {
-      await updateReview(review._id, newRating, newReview);
-      toast.success("Your review was deleted successfully!");
-      setRerender(!rerender);
-    } catch (err) {
-      console.log(
-        "Deleting reciew error: ",
-        err.response ? err.response.data : err
-      );
-      toast.error(err.response ? err.response.data.message : err.message);
-    }
-    setIsSendingUpdatedReview(false);
-    setEditing(false);
+    editReviewMutation.mutate({ reviewId: review._id, newRating, newReview });
   };
 
   return (
     <article>
-      <div className="review-card__heading">
+      <div
+        className={`review-card__heading ${
+          manageReviewsPage && "review-card__heading--manage-tours"
+        }`}
+      >
         <h3 className="mb-sm">{tour.name} Tour</h3>
-        <p className="review__avatar--date">
-          {new Date(review.createdAt).toLocaleString()}
-        </p>
+        {!manageReviewsPage && (
+          <p className="review__avatar--date">
+            {new Date(review.createdAt).toLocaleString()}
+          </p>
+        )}
       </div>
 
       <div key={review.id} className="reviews__card reviews-card__card">
-        {!isDeletingReview ? (
+        {!deleteReviewMutation.isLoading ? (
           <div className="btn--delete" onClick={handleRemoveReviewOrExitEdit}>
             X
           </div>
@@ -70,18 +89,34 @@ const ReviewCard = ({ review, tour, setIsEditing }) => {
             <BeatLoader size={10} />
           </div>
         )}
-        {!editing ? (
-          <div className="btn--edit" onClick={() => setEditing(true)}>
-            <FiEdit />
+        {!manageReviewsPage &&
+          (!editing ? (
+            <div className="btn--edit" onClick={() => setEditing(true)}>
+              <FiEdit />
+            </div>
+          ) : (
+            <AiFillCheckCircle
+              className="update-reviews__save"
+              size={25}
+              onClick={handleEditReview}
+            />
+          ))}
+        {manageReviewsPage && (
+          <div className="reviews__avatar">
+            <img
+              src={`${process.env.REACT_APP_BACKEND}/img/users/${review.user.photo}`}
+              alt={review.name}
+              className="reviews__avatar--img"
+            />
+            <div>
+              <h6 className="review__avatar--user">{review.user.name}</h6>
+              <p className="review__avatar--date">
+                {new Date(review.createdAt).toLocaleString()}
+              </p>
+            </div>
           </div>
-        ) : (
-          <AiFillCheckCircle
-            className="update-reviews__save"
-            size={25}
-            onClick={handleEditReview}
-          />
         )}
-        {!isDeletingReview && !isSendingUpdatedReview ? (
+        {!deleteReviewMutation.isLoading && !editReviewMutation.isLoading ? (
           editing ? (
             <>
               <textarea
@@ -93,14 +128,20 @@ const ReviewCard = ({ review, tour, setIsEditing }) => {
               />
             </>
           ) : (
-            <p className="reviews__text review-card__text">{review.review}</p>
+            <p
+              className={`reviews__text ${
+                !manageReviewsPage && "review-card__text"
+              }`}
+            >
+              {review.review}
+            </p>
           )
         ) : (
           <div className="delete-review__spinner--middle ">
             <BeatLoader size={20} />
           </div>
         )}
-        {!editing || !isSendingUpdatedReview ? (
+        {!editing || !editReviewMutation.isLoading ? (
           <div className="reviews__rating">
             {[1, 2, 3, 4, 5].map((star) => (
               <AiOutlineStar

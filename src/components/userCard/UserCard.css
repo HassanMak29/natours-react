@@ -1,0 +1,172 @@
+.user-card {
+  width: 30rem;
+  background-color: #fff;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.1);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.user-card__large {
+  transform: scale(1.05);
+}
+
+.user-card__content {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 2rem;
+  background-color: #f7f7f7;
+  height: 22.7rem;
+}
+
+.user-card__content--credentials {
+  margin-bottom: 3rem;
+  height: 4.6rem;
+}
+
+.user-card__content--credentials h3 {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.user-card__content--credentials p {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 300;
+}
+
+.user-card__content--more-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.user-card__content--image {
+  width: 7rem;
+  height: 7rem;
+  margin-bottom: 2rem;
+}
+
+.user-card__content--more-info img {
+  width: 100%;
+  border-radius: 50%;
+}
+
+.user-card__content--more-info p {
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.user-card__input {
+  border: none;
+  padding: 0.3rem 2rem;
+  outline-color: #55c57a;
+  background-color: #f2f2f2;
+  color: inherit;
+  width: 100%;
+}
+
+.user-card__select {
+  border: 1px solid #f2f2f2;
+  outline-color: #55c57a;
+  margin-left: 0.5rem;
+  color: inherit;
+}
+
+.user-card__cta {
+  padding: 2rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.user-card__cta--edit,
+.user-card__cta--cancel,
+.user-card__cta--save {
+  padding: 0.5rem 0;
+  border: none;
+  outline: none;
+  background-color: #fff;
+  color: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s all ease;
+}
+
+.user-card__cta--cancel:hover,
+.user-card__cta--edit:hover,
+.user-card__cta--save:hover {
+  transform: translateY(-2px);
+}
+
+.user-card__cta--cancel {
+  color: #d25050;
+  margin-left: 1.5rem;
+}
+
+.user-card__cta--save {
+  color: #55c57a;
+}
+
+.user-card__cta--more {
+  cursor: pointer;
+  transition: 0.3s all ease;
+  z-index: 101;
+}
+
+.user-card__cta--more:hover {
+  transform: translateY(-2px);
+}
+
+.actions__card--overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 50;
+}
+
+.user__card--overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 50;
+  background-color: #00000049;
+}
+
+.user-card__spinner--overlay {
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.actions__card {
+  width: 15rem;
+  border-radius: 5px;
+  box-shadow: 0 1.5rem 4rem rgba(0, 0, 0, 0.1);
+  position: absolute;
+  bottom: -2rem;
+  right: 2.5rem;
+  z-index: 100;
+  padding: 1rem 1rem;
+  background-color: #f1efef;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.actions__card--delete {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #d25050;
+}

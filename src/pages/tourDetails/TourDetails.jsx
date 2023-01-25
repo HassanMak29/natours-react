@@ -1,11 +1,10 @@
+import { useEffect } from "react";
+import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
-import { getTour } from "../../util/api";
-import "./TourDetails.css";
-
-import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import Spinner from "../../components/spinner/Spinner";
 import { useGlobalContext } from "../../context/UserContext";
+import { getTour } from "../../util/api";
 import { nextTourDate } from "../../util/functions";
 import useLocalStorage from "../../util/hooks/useLocalStorage";
 import AddReview from "./sections/addReview/AddReview";
@@ -15,12 +14,27 @@ import Header from "./sections/header/Header";
 import Map from "./sections/map/Map";
 import Pictures from "./sections/pictures/Pictures";
 import Reviews from "./sections/reviews/Reviews";
+import "./TourDetails.css";
 
 const TourDetails = () => {
   const { tourId } = useParams();
   const [user] = useLocalStorage("user");
   const { rerender } = useGlobalContext();
-  const [tour, setTour] = useState(null);
+
+  const {
+    error,
+    data: tour,
+    refetch,
+  } = useQuery({
+    queryKey: ["tour", tourId],
+    queryFn: () => getTour(tourId),
+    cacheTime: 1000 * 60 * 20,
+  });
+
+  if (error) {
+    console.log("Error getting tour: ", error);
+    toast.error(error.response ? error.response.data.message : error.message);
+  }
 
   let userHasBookedThisTour = false;
   if (tour) {
@@ -31,22 +45,9 @@ const TourDetails = () => {
     }
   }
 
-  const fetchMyTour = useCallback(async () => {
-    try {
-      const tour = await getTour(tourId);
-      setTour(tour);
-    } catch (err) {
-      console.log(
-        "Error trying to fetch tour: ",
-        err.response ? err.response.data : err
-      );
-      toast.error(err.response ? err.response.data.message : err.message);
-    }
-  }, [tourId]);
-
   useEffect(() => {
-    fetchMyTour();
-  }, [fetchMyTour, rerender]);
+    refetch();
+  }, [refetch, rerender]);
 
   return !tour ? (
     <Spinner />

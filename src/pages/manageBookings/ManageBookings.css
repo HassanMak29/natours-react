@@ -1,0 +1,55 @@
+.section-bookings {
+  text-align: center;
+}
+
+.table {
+  border-radius: 2rem;
+  overflow: hidden;
+  width: 100%;
+}
+
+.table thead {
+  background-image: linear-gradient(to right, #7dd56f, #28b487);
+}
+
+.table thead tr th {
+  padding: 1rem 1rem;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.table tbody {
+  background-color: #fff;
+}
+
+.table tbody tr th {
+  padding: 1rem 1rem;
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.user-cell img {
+  border-radius: 50%;
+  width: 4rem;
+}
+
+.tour-name-cell span {
+  display: inline-block;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-image: linear-gradient(to right, #7dd56f, #28b487);
+  background-clip: text;
+}
+
+.tour-name-cell span:hover {
+  color: transparent;
+  transform: translateY(-1px);
+  text-shadow: 0 0.7rem 1rem rgba(0, 0, 0, 0.616);
+}

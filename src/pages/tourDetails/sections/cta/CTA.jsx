@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMutation } from "react-query";
 import { NavLink } from "react-router-dom";
 import { toast } from "react-toastify";
 import { bookTour } from "../../../../util/api";
@@ -7,21 +7,31 @@ import useLocalStorage from "../../../../util/hooks/useLocalStorage";
 import "./CTA.css";
 
 const CTA = ({ tour }) => {
-  const [loading, setLoading] = useState(false);
   const [user] = useLocalStorage("user");
 
   const { date, preciseDate } = nextTourDate(tour);
 
-  const handleBookTour = async () => {
-    setLoading(true);
-    try {
-      const sessionInfo = await bookTour(tour._id, user._id, preciseDate);
+  const bookTourMutation = useMutation({
+    mutationFn: ({ tourId, userId, preciseDate }) =>
+      bookTour(tourId, userId, preciseDate),
+    onSuccess: (sessionInfo) => {
       window.open(sessionInfo.session.url, "_self");
-    } catch (err) {
-      console.error(err.response ? err.response.data : err);
-      toast.error(err.response ? err.response.data.message : err);
-    }
-    setLoading(false);
+    },
+    onError: (err) => {
+      console.log(
+        "Booking tour error: ",
+        err.response ? err.response.data : err
+      );
+      toast.error(err.response ? err.response.data.message : err.message);
+    },
+  });
+
+  const handleBookTour = async () => {
+    bookTourMutation.mutate({
+      tourId: tour._id,
+      usreId: user._id,
+      preciseDate,
+    });
   };
 
   return (
@@ -55,7 +65,7 @@ const CTA = ({ tour }) => {
               onClick={handleBookTour}
               disabled={!date}
             >
-              {!loading ? "Book tour now!" : "Processing..."}
+              {!bookTourMutation.isLoading ? "Book tour now!" : "Processing..."}
             </button>
           ) : (
             <NavLink to="/login" className="btn btn--green span-all-rows">

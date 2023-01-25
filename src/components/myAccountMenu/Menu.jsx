@@ -17,13 +17,13 @@ const Menu = () => {
           </Link>
         </li>
         <li>
-          <Link to={`/user/bookings`}>
+          <Link to="/user/bookings">
             <FiBriefcase className="side-nav__icon" /> My bookings
           </Link>
         </li>
         {user?.role !== "admin" && (
           <li>
-            <Link to={`/user/reviews`}>
+            <Link to="/user/reviews">
               <AiOutlineStar className="side-nav__icon" /> My reviews
             </Link>
           </li>

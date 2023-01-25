@@ -1,15 +1,13 @@
-import "./Account.css";
 import { useState } from "react";
+import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import Menu from "../../components/myAccountMenu/Menu";
 import { deleteMyAccount, updatePassword, updateProfile } from "../../util/api";
 import useLocalStorage from "../../util/hooks/useLocalStorage";
+import "./Account.css";
 
 const Account = () => {
   const [user, setUser] = useLocalStorage("user");
-  const [updateProfileLoading, setUpdateProfileLoading] = useState(false);
-  const [updatePAsswordLoading, setUpdatePAsswordLoading] = useState(false);
 
   const [name, setName] = useState(user?.name);
   const [email, setEmail] = useState(user?.email);
@@ -21,62 +19,91 @@ const Account = () => {
 
   const navigate = useNavigate();
 
-  const handleUpdateProfile = async (e) => {
-    e.preventDefault();
-    setUpdateProfileLoading(true);
-    try {
-      const form = new FormData();
-      form.append("name", name);
-      form.append("email", email);
-      form.append("photo", image);
-      const response = await updateProfile(form);
+  const updateProfileMutation = useMutation({
+    mutationFn: (form) => updateProfile(form),
+    onSuccess: (response) => {
       localStorage.setItem("user", JSON.stringify(response.data.user));
       toast.success("Your profile has been updated successfully!");
       setTimeout(() => {
         navigate(0);
       }, 5000);
-    } catch (err) {
-      console.log("Update profile error: ", err);
-      toast.error(err.response.data.message);
-    }
-    setUpdateProfileLoading(false);
-  };
+    },
+    onError: (err) => {
+      console.log(
+        "Updating profile error: ",
+        err.response ? err.response.data : err
+      );
+      toast.error(err.response ? err.response.data.message : err.message);
+    },
+  });
 
-  const handleUpdatePassword = async (e) => {
-    e.preventDefault();
-    setUpdatePAsswordLoading(true);
-    try {
-      await updatePassword(passwordCurrent, newPassword, passwordConfirm);
+  const updatePasswordMutation = useMutation({
+    mutationFn: ({ passwordCurrent, newPassword, passwordConfirm }) =>
+      updatePassword(passwordCurrent, newPassword, passwordConfirm),
+    onSuccess: () => {
       toast.success("Your password has been updated successfully!");
       setPasswordCurrent("");
       setPasswordConfirm("");
       setNewPassword("");
-    } catch (err) {
-      console.log("Update profile error: ", err);
-      toast.error(err.response.data.message);
-    }
-    setUpdatePAsswordLoading(false);
-  };
+    },
+    onError: (err) => {
+      console.log(
+        "Updating password error: ",
+        err.response ? err.response.data : err
+      );
+      toast.error(err.response ? err.response.data.message : err.message);
+    },
+  });
 
-  const handleDeleteAccount = async () => {
-    try {
-      await deleteMyAccount();
-      toast.success("Your account has been deleted successfully!");
+  const deleteAccountMutation = useMutation({
+    mutationFn: deleteMyAccount,
+    onSuccess: () => {
+      toast.success("Your account has been diactivated!");
       toast.success("We are sorry to see you go 🥲");
       setUser(null);
       setTimeout(() => {
         navigate(0);
       }, 5000);
-    } catch (err) {
-      console.log("Update profile error: ", err);
-      toast.error(err.response.data.message);
+    },
+    onError: (err) => {
+      console.log(
+        "Deleting account error: ",
+        err.response ? err.response.data : err
+      );
+      toast.error(err.response ? err.response.data.message : err.message);
+    },
+  });
+
+  const handleUpdateProfile = (e) => {
+    e.preventDefault();
+
+    const form = new FormData();
+    form.append("name", name);
+    form.append("email", email);
+    form.append("photo", image);
+
+    updateProfileMutation.mutate(form);
+  };
+
+  const handleUpdatePassword = (e) => {
+    e.preventDefault();
+    updatePasswordMutation.mutate({
+      passwordCurrent,
+      newPassword,
+      passwordConfirm,
+    });
+  };
+
+  const handleDeleteAccount = () => {
+    if (window.confirm("Are you sure you want to delete your account ?")) {
+      deleteAccountMutation.mutate();
     }
   };
 
   return (
     <main className="main">
       <div className="user-view">
-        <Menu />
+        {/* <Menu /> */}
         <section className="user-view__content">
           <div className="user-view__form-container">
             <h2 className="heading-secondary mb-md">Your account settings</h2>
@@ -132,9 +159,11 @@ const Account = () => {
                 <button
                   className="btn btn--small btn--green"
                   type="submit"
-                  disabled={updateProfileLoading}
+                  disabled={updateProfileMutation.isLoading}
                 >
-                  {!updateProfileLoading ? "Save settings" : "Loading..."}
+                  {!updateProfileMutation.isLoading
+                    ? "Save settings"
+                    : "Loading..."}
                 </button>
               </div>
             </form>
@@ -195,9 +224,11 @@ const Account = () => {
                 <button
                   className="btn btn--small btn--green btn--save-password"
                   type="submit"
-                  disabled={updatePAsswordLoading}
+                  disabled={updatePasswordMutation.isLoading}
                 >
-                  {!updatePAsswordLoading ? "Save password" : "Loading..."}
+                  {!updatePasswordMutation.isLoading
+                    ? "Save password"
+                    : "Loading..."}
                 </button>
               </div>
             </form>

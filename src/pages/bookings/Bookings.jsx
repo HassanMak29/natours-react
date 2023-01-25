@@ -1,45 +1,49 @@
-import "./Bookings.css";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import useLocalStorage from "../../util/hooks/useLocalStorage";
-import { useGlobalContext } from "../../context/UserContext";
 import Card from "../../components/card/Card";
 import Spinner from "../../components/spinner/Spinner";
+import { useGlobalContext } from "../../context/UserContext";
 import { getMyBookings } from "../../util/api";
+import useLocalStorage from "../../util/hooks/useLocalStorage";
+import "./Bookings.css";
 
 const Bookings = () => {
   const [user] = useLocalStorage("user");
   const { rerender } = useGlobalContext();
-  const [bookings, setBookings] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const bookedTours = bookings
-    .map((booking) => booking.tour)
-    .filter(
-      (tour, index, toursArray) =>
-        index === toursArray.findIndex((t) => t.id === tour.id)
-    );
 
-  const fetchMyBookings = useCallback(async () => {
-    setLoading(true);
-    try {
-      const bookings = await getMyBookings(user._id);
-      setBookings(bookings);
-    } catch (err) {
-      console.log(
-        "Error trying to fetch user bookings: ",
-        err.response ? err.response.data : err
+  const {
+    isLoading,
+    error,
+    data: bookings,
+    refetch,
+  } = useQuery({
+    queryKey: ["bookings", user._id],
+    queryFn: () => getMyBookings(user._id),
+    cacheTime: 1000 * 60 * 20,
+  });
+
+  let bookedTours;
+  if (bookings) {
+    bookedTours = bookings
+      .map((booking) => booking.tour)
+      .filter(
+        (tour, index, toursArray) =>
+          index === toursArray.findIndex((t) => t.id === tour.id)
       );
-      toast.error(err.response ? err.response.data.message : err.message);
-    }
-    setLoading(false);
-  }, [user._id]);
+  }
+
+  if (error) {
+    console.log("Error fetching user bookings: ", error);
+    toast.error(error.response ? error.response.data.message : error.message);
+  }
 
   useEffect(() => {
-    fetchMyBookings();
-  }, [rerender]);
+    refetch();
+  }, [refetch, rerender]);
 
-  return loading ? (
+  return isLoading || !bookedTours ? (
     <Spinner />
   ) : (
     <main className="main">
