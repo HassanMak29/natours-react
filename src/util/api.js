@@ -27,10 +27,7 @@ export const login = async (email, password) => {
 };
 
 export const logout = async () => {
-  const { data } = await axios.get(
-    `${process.env.REACT_APP_API_URL}/users/logout`
-  );
-  return data;
+  await axios.get(`${process.env.REACT_APP_API_URL}/users/logout`);
 };
 
 export const refresh = async () => {
