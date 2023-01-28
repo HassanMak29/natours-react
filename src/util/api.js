@@ -101,7 +101,8 @@ export const bookTour = async (tourId, userId, startDate) => {
 ////////// BOOKINGS ///////////////
 export const getMyBookings = async (id) => {
   const { data } = await axios.get(
-    `${process.env.REACT_APP_API_URL}/users/${id}/bookings`
+    `${process.env.REACT_APP_API_URL}/users/${id}/bookings`,
+    { withCredentials: true }
   );
   return data.data;
 };
