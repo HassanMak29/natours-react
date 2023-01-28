@@ -30,7 +30,7 @@
 .header__link--username {
   color: #fff;
   font-size: 1.6rem;
-  font-weight: 500;
+  font-weight: 300;
   text-transform: uppercase;
   transition: 0.3s all;
   display: inline-block;
@@ -86,7 +86,7 @@
   border: none;
   font-family: inherit;
   font-size: 1.6rem;
-  font-weight: 500;
+  font-weight: 300;
   text-transform: uppercase;
   transition: 0.3s all;
   margin-left: 2rem;

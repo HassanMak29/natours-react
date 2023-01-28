@@ -1,6 +1,7 @@
 .main {
   padding: 8rem 6rem;
   background-color: #f7f7f7;
+  min-height: 68vh;
 }
 
 .card-container {

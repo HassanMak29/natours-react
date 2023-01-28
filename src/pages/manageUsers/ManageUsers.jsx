@@ -1,16 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import Spinner from "../../components/spinner/Spinner";
 import UserCard from "../../components/userCard/UserCard";
-import { useGlobalContext } from "../../context/UserContext";
 import { getAllUsers } from "../../util/api";
 import "./ManageUsers.css";
 
 const ManageUsers = () => {
-  const { rerender } = useGlobalContext();
   const [editing, setEditing] = useState(false);
-  const { isLoading, error, data, refetch } = useQuery({
+  const { isLoading, error, data } = useQuery({
     queryKey: ["users"],
     queryFn: getAllUsers,
     cacheTime: 1000 * 60 * 20,
@@ -20,10 +18,6 @@ const ManageUsers = () => {
     console.log("Getting all users error: ", error);
     toast.error(error.response ? error.response.data.message : error.message);
   }
-
-  useEffect(() => {
-    refetch();
-  }, [refetch, rerender]);
 
   return !isLoading || editing ? (
     <main className="main">

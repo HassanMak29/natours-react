@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -16,16 +15,25 @@ import Pictures from "./sections/pictures/Pictures";
 import Reviews from "./sections/reviews/Reviews";
 import "./TourDetails.css";
 
-const TourDetails = () => {
-  const { tourId } = useParams();
-  const [user] = useLocalStorage("user");
-  const { rerender } = useGlobalContext();
+const getTourId = (tours, slug) => {
+  let tourId;
+  if (!localStorage.getItem(`${slug}-id`)) {
+    tourId = tours.filter((tour) => tour.slug === slug)[0]._id;
+    localStorage.setItem(`${slug}-id`, JSON.stringify(tourId));
+  } else {
+    tourId = JSON.parse(localStorage.getItem(`${slug}-id`));
+  }
+  return tourId;
+};
 
-  const {
-    error,
-    data: tour,
-    refetch,
-  } = useQuery({
+const TourDetails = () => {
+  const { tours } = useGlobalContext();
+  const { tourSlug } = useParams();
+  const [user] = useLocalStorage("user");
+
+  let tourId = getTourId(tours, tourSlug);
+
+  const { error, data: tour } = useQuery({
     queryKey: ["tour", tourId],
     queryFn: () => getTour(tourId),
     cacheTime: 1000 * 60 * 20,
@@ -37,17 +45,13 @@ const TourDetails = () => {
   }
 
   let userHasBookedThisTour = false;
-  if (tour) {
+  if (tour && user) {
     const { index } = tour && nextTourDate(tour);
 
     if (tour.startDates[index].participants.includes(user._id)) {
       userHasBookedThisTour = true;
     }
   }
-
-  useEffect(() => {
-    refetch();
-  }, [refetch, rerender]);
 
   return !tour ? (
     <Spinner />

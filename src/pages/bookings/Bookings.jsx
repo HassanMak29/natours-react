@@ -1,23 +1,19 @@
-import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import Card from "../../components/card/Card";
 import Spinner from "../../components/spinner/Spinner";
-import { useGlobalContext } from "../../context/UserContext";
 import { getMyBookings } from "../../util/api";
 import useLocalStorage from "../../util/hooks/useLocalStorage";
 import "./Bookings.css";
 
 const Bookings = () => {
   const [user] = useLocalStorage("user");
-  const { rerender } = useGlobalContext();
 
   const {
     isLoading,
     error,
     data: bookings,
-    refetch,
   } = useQuery({
     queryKey: ["bookings", user._id],
     queryFn: () => getMyBookings(user._id),
@@ -38,10 +34,6 @@ const Bookings = () => {
     console.log("Error fetching user bookings: ", error);
     toast.error(error.response ? error.response.data.message : error.message);
   }
-
-  useEffect(() => {
-    refetch();
-  }, [refetch, rerender]);
 
   return isLoading || !bookedTours ? (
     <Spinner />

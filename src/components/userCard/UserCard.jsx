@@ -1,15 +1,13 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
 import { IoMdMore } from "react-icons/io";
 import { RiDeleteBin6Line } from "react-icons/ri";
+import { useMutation, useQueryClient } from "react-query";
 import BeatLoader from "react-spinners/BeatLoader";
 import { toast } from "react-toastify";
-import { useGlobalContext } from "../../context/UserContext";
 import { deleteUser, updateUser } from "../../util/api";
 import "./UserCard.css";
 
 const UserCard = ({ user, setEditing }) => {
-  const { rerender, setRerender } = useGlobalContext();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(user.name);
   const [email, setEmail] = useState(user.email);
@@ -24,7 +22,6 @@ const UserCard = ({ user, setEditing }) => {
     onSuccess: () => {
       setIsEditing(false);
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      setRerender(!rerender);
     },
     onError: (err) => {
       console.log("Editing user error: ", err);
@@ -37,7 +34,6 @@ const UserCard = ({ user, setEditing }) => {
     onSuccess: () => {
       setIsEditing(false);
       queryClient.invalidateQueries({ queryKey: ["users"] });
-      setRerender(!rerender);
     },
     onError: (err) => {
       console.log("Deleting user error: ", err);

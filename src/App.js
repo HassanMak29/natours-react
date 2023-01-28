@@ -44,7 +44,7 @@ const router = createBrowserRouter([
         path: "tour",
         children: [
           {
-            path: ":slug-:tourId",
+            path: ":tourSlug",
             element: <TourDetails />,
           },
         ],

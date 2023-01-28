@@ -53,3 +53,7 @@
   transform: translateY(-1px);
   text-shadow: 0 0.7rem 1rem rgba(0, 0, 0, 0.616);
 }
+
+.delete-btn {
+  cursor: pointer;
+}

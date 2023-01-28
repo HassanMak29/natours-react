@@ -4,7 +4,8 @@ const Context = createContext({});
 
 export const ContextProvider = ({ children }) => {
   const [rerender, setRerender] = useState(false);
-  const ContextProviderValue = { rerender, setRerender };
+  const [tours, setTours] = useState([]);
+  const ContextProviderValue = { rerender, setRerender, tours, setTours };
 
   return (
     <Context.Provider value={ContextProviderValue}>{children}</Context.Provider>

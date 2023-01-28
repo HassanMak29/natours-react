@@ -4,15 +4,11 @@ import { FiMapPin } from "react-icons/fi";
 import { useMutation, useQueryClient } from "react-query";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useGlobalContext } from "../../context/UserContext";
 import { deleteBooking } from "../../util/api";
 import { nextTourDate } from "../../util/functions";
-import useLocalStorage from "../../util/hooks/useLocalStorage";
 import "./Card.css";
 
 const Card = ({ tour, myBookingsPage, booking }) => {
-  const [user] = useLocalStorage("user");
-  const { rerender, setRerender } = useGlobalContext();
   const { date } = nextTourDate(tour);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -21,8 +17,7 @@ const Card = ({ tour, myBookingsPage, booking }) => {
     mutationFn: (bookingId) => deleteBooking(bookingId),
     onSuccess: () => {
       toast.success("Your bookings was canceled successfully");
-      queryClient.invalidateQueries({ queryKey: ["bookings", user._id] });
-      setRerender(!rerender);
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
     },
     onError: (err) => {
       console.log(
@@ -42,7 +37,7 @@ const Card = ({ tour, myBookingsPage, booking }) => {
       className="card"
       onClick={(e) => {
         if (e.target.id !== "cancelBtn") {
-          navigate(`/tour/${tour.slug}-${tour.id}`);
+          navigate(`/tour/${tour.slug}`);
         }
       }}
       title="See more details"
@@ -109,7 +104,7 @@ const Card = ({ tour, myBookingsPage, booking }) => {
           </button>
         ) : (
           <NavLink
-            to={`/tour/${tour.slug}-${tour.id}`}
+            to={`/tour/${tour.slug}`}
             className="btn btn--small btn--green"
           >
             Details

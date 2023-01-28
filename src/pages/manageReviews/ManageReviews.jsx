@@ -1,20 +1,17 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import { toast } from "react-toastify";
 import ReviewCard from "../../components/reviewCard/ReviewCard";
 import Spinner from "../../components/spinner/Spinner";
-import { useGlobalContext } from "../../context/UserContext";
 import { getAllReviews } from "../../util/api";
 import "./ManageReviews.css";
 
 const ManageReviews = () => {
-  const { rerender } = useGlobalContext();
   const [isEditing, setIsEditing] = useState(false);
   const {
     isLoading,
     error,
     data: reviews,
-    refetch,
   } = useQuery({
     queryKey: ["allReviews"],
     queryFn: getAllReviews,
@@ -28,10 +25,6 @@ const ManageReviews = () => {
     );
     toast.error(error.response ? error.response.data.message : error.message);
   }
-
-  useEffect(() => {
-    refetch();
-  }, [refetch, rerender]);
 
   return isLoading && !isEditing ? (
     <Spinner />

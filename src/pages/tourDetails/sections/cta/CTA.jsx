@@ -29,7 +29,7 @@ const CTA = ({ tour }) => {
   const handleBookTour = async () => {
     bookTourMutation.mutate({
       tourId: tour._id,
-      usreId: user._id,
+      userId: user._id,
       preciseDate,
     });
   };

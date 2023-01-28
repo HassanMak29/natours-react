@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
 import { MdOutlineExpandMore } from "react-icons/md";
+import { useMutation } from "react-query";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useGlobalContext } from "../../context/UserContext";
@@ -14,7 +14,6 @@ const NavBar = () => {
   const { rerender, setRerender } = useGlobalContext();
   const [openOptions, setOpenOptions] = useState(null);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
   let activeStyle = {
     color: "#fff",
@@ -28,7 +27,6 @@ const NavBar = () => {
     mutationFn: logout,
     onSuccess: () => {
       localStorage.removeItem("user");
-      queryClient.invalidateQueries({ queryKey: ["user"] });
       setRerender(!rerender);
       navigate("/");
     },

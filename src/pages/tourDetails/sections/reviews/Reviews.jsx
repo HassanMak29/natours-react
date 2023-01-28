@@ -1,17 +1,15 @@
 import { useState } from "react";
-import { useMutation, useQueryClient } from "react-query";
 import { AiFillCheckCircle, AiOutlineStar } from "react-icons/ai";
 import { FiEdit } from "react-icons/fi";
+import { useMutation, useQueryClient } from "react-query";
 import BeatLoader from "react-spinners/BeatLoader";
 import { toast } from "react-toastify";
-import { useGlobalContext } from "../../../../context/UserContext";
 import { deleteReview, updateReview } from "../../../../util/api";
 import useLocalStorage from "../../../../util/hooks/useLocalStorage";
 import "./Reviews.css";
 
 const Reviews = ({ tour }) => {
   const [user] = useLocalStorage("user");
-  const { rerender, setRerender } = useGlobalContext();
   const queryClient = useQueryClient();
 
   const reviewRating = tour.reviews.find(
@@ -35,8 +33,7 @@ const Reviews = ({ tour }) => {
     mutationFn: (reviewId) => deleteReview(reviewId),
     onSuccess: () => {
       toast.success("Your review was deleted successfully!");
-      setRerender(!rerender);
-      queryClient.invalidateQueries({ queryKey: ["reviews", user._id] });
+      queryClient.invalidateQueries({ queryKey: ["tour", tour._id] });
     },
     onError: (err) => {
       console.log(
@@ -52,9 +49,8 @@ const Reviews = ({ tour }) => {
       updateReview(reviewId, newRating, newReview),
     onSuccess: () => {
       toast.success("Your review was edited successfully!");
-      setRerender(!rerender);
       setEditing(false);
-      queryClient.invalidateQueries({ queryKey: ["reviews", user._id] });
+      queryClient.invalidateQueries({ queryKey: ["tour", tour._id] });
     },
     onError: (err) => {
       console.log(

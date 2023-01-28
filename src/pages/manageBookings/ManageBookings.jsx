@@ -1,21 +1,19 @@
-import { useEffect } from "react";
 import { AiFillCheckCircle } from "react-icons/ai";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { RxCross1 } from "react-icons/rx";
-import { useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
 import Spinner from "../../components/spinner/Spinner";
-import { useGlobalContext } from "../../context/UserContext";
-import { getAllBookings } from "../../util/api";
+import { deleteBooking, getAllBookings } from "../../util/api";
 import "./ManageBookings.css";
 
 const ManageBookings = () => {
-  const { rerender } = useGlobalContext();
+  const queryClient = useQueryClient();
+
   const {
     isLoading,
     error,
     data: bookings,
-    refetch,
   } = useQuery({
     queryKey: ["bookings"],
     queryFn: getAllBookings,
@@ -27,9 +25,20 @@ const ManageBookings = () => {
     toast.error(error.response ? error.response.data.message : error.message);
   }
 
-  useEffect(() => {
-    refetch();
-  }, [refetch, rerender]);
+  const cancelBookingMutation = useMutation({
+    mutationFn: (bookingId) => deleteBooking(bookingId),
+    onSuccess: () => {
+      toast.success("Your bookings was canceled successfully");
+      queryClient.invalidateQueries({ queryKey: ["bookings"] });
+    },
+    onError: (err) => {
+      console.log(
+        "Deleting booking error: ",
+        err.response ? err.response.data : err
+      );
+      toast.error(err.response ? err.response.data.message : err.message);
+    },
+  });
 
   return isLoading ? (
     <Spinner />
@@ -85,7 +94,12 @@ const ManageBookings = () => {
                     )}
                   </th>
                   <th>
-                    <RiDeleteBin6Line color="#d25050" size={22} />
+                    <RiDeleteBin6Line
+                      className="delete-btn"
+                      color="#d25050"
+                      size={22}
+                      onClick={() => cancelBookingMutation.mutate(booking._id)}
+                    />
                   </th>
                 </tr>
               ))}

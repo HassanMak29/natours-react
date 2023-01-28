@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import { toast } from "react-toastify";
-import { useGlobalContext } from "../../../../context/UserContext";
 import { addReview } from "../../../../util/api";
 import "./AddReview.css";
 
 const AddReview = ({ tour }) => {
-  const { rerender, setRerender } = useGlobalContext();
   const [rating, setRating] = useState("choose_a_rating");
   const [reviewText, setReviewText] = useState("");
   const queryClient = useQueryClient();
@@ -15,9 +13,8 @@ const AddReview = ({ tour }) => {
     mutationFn: ({ tourId, reviewText, rating }) =>
       addReview(tourId, reviewText, rating),
     onSuccess: () => {
-      setRerender(!rerender);
       toast.success("Your review was added successfully!");
-      queryClient.invalidateQueries({ queryKey: ["tours", tour._id] });
+      queryClient.invalidateQueries({ queryKey: ["tour", tour._id] });
     },
     onError: (err) => {
       console.log(
