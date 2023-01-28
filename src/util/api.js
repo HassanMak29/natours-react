@@ -66,7 +66,7 @@ export const deleteMyAccount = async () => {
 
 export const getAllUsers = async () => {
   const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/users`);
-  return data;
+  return data.data;
 };
 
 export const updateUser = async (userId, name, email, role) => {

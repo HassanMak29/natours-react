@@ -8,7 +8,11 @@ import "./ManageUsers.css";
 
 const ManageUsers = () => {
   const [editing, setEditing] = useState(false);
-  const { isLoading, error, data } = useQuery({
+  const {
+    isLoading,
+    error,
+    data: users,
+  } = useQuery({
     queryKey: ["users"],
     queryFn: getAllUsers,
     cacheTime: 1000 * 60 * 20,
@@ -24,7 +28,7 @@ const ManageUsers = () => {
       <section className="section-users">
         <h2 className="heading-secondary mb-xlg">Manage all users</h2>
         <div className="section-users__users-wrapper">
-          {data.data.map((user, i) => (
+          {users.map((user, i) => (
             <UserCard key={user._id} user={user} setEditing={setEditing} />
           ))}
         </div>
